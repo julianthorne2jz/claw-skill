@@ -70,17 +70,39 @@ function analyze(dir) {
     });
   }
   
-  // Check for flags
+  // Check for flags with better filtering
   const flags = [];
   const flagPatterns = [
-    /--(\w+[-\w]*)/g,
-    /-([a-zA-Z])\b/g
+    // strict comparisons: === '--flag', case '--flag', .includes('--flag')
+    /(?:===|==|case|includes\(|indexOf\()\s*['"`](-{1,2}[\w-]+)['"`]/g,
+    // minimist/yargs style: argv.flag or opts.flag (matches 'flag' then we prepend --)
+    /(?:argv|opts|flags)\.([a-zA-Z0-9_]+)/g,
   ];
+
+  const ignoredFlags = [
+    '--', '-', '-1', '---', '--help', '-h',
+    '--push', '--pop', '--shift', '--unshift', '--slice', '--splice', 
+    '--map', '--filter', '--reduce', '--forEach', '--find', '--join',
+    '--includes', '--indexOf', '--toString', '--length', '--concat'
+  ];
+
   flagPatterns.forEach(pattern => {
-    const matches = mainCode.matchAll(pattern);
-    for (const m of matches) {
-      const flag = m[0];
-      if (!flags.includes(flag) && !flag.includes('--help')) {
+    let match;
+    while ((match = pattern.exec(mainCode)) !== null) {
+      let flag = match[1];
+      
+      // Handle property access style (argv.flag -> --flag)
+      if (!flag.startsWith('-')) {
+        if (flag.length === 1) flag = '-' + flag;
+        else flag = '--' + flag;
+      }
+
+      if (flags.includes(flag)) continue;
+      if (ignoredFlags.includes(flag)) continue;
+      if (['--flag', '--cmd', '--opt', '--arg', '--args'].includes(flag)) continue;
+
+      // Basic validation
+      if (/^-{1,2}[a-zA-Z]/.test(flag)) {
         flags.push(flag);
       }
     }
