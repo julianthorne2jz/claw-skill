@@ -1,0 +1,12 @@
+{
+  "name": "claw-skill",
+  "version": "1.0.0",
+  "description": "Generate SKILL.md files to make tools discoverable by AI agents",
+  "main": "index.js",
+  "bin": {
+    "claw-skill": "./index.js"
+  },
+  "keywords": ["cli", "skill", "agent", "openclaw", "documentation"],
+  "author": "Julian Thorne",
+  "license": "MIT"
+}
