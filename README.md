@@ -1,5 +1,16 @@
 # claw-skill
 
+## Install
+
+```bash
+git clone https://github.com/julianthorne2jz/claw-skill
+cd claw-skill
+npm link
+```
+
+Now you can use `claw-skill` from anywhere.
+
+
 Generate SKILL.md files to make CLI tools discoverable by AI agents.
 
 ## Why?
